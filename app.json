@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "tkride_mobile",
+    "name": "TK Ride",
     "slug": "tkride_mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/tkridelogo2.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -17,9 +17,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/tkridelogo2.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.tiyokanor32.tkride_mobile"
     },
     "web": {
       "bundler": "metro",
@@ -31,6 +32,11 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "76dd6ee2-db27-4238-92c0-d8a5a273500d"
+      }
     }
   }
 }
