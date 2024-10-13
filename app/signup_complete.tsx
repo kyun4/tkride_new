@@ -1,4 +1,4 @@
-import {Text,Image,View, StyleSheet,TextInput,TouchableOpacity,Dimensions,FlatList} from 'react-native';
+import {Text,Image,View, StyleSheet,TextInput,TouchableOpacity,Dimensions,Alert} from 'react-native';
 import React,{useState} from 'react';
 import {useRouter, useLocalSearchParams} from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -26,17 +26,23 @@ export default function SignUpComplete(){
 
     const router = useRouter();
     const [selectedCity, setSelectedCity] = useState("")
+    const [userDataInsert, setUserDataInsert] = useState({})
     const params = useLocalSearchParams();
     const firestore_uid = params.firestore_uid;
     const email = params.email;
     const hashed = params.hashed;
+    const user_data = params.user_data;
+    
 
     const auth = getAuth();
 
     const updateFirebaseAuthUID = async (firebase_uid: any) => {
         try{
 
+            const user_data_json = JSON.parse(user_data.toString());
+
             const updateRef = await updateDoc(doc(db,"users_list", firestore_uid.toString()),{
+                ...user_data_json,
                 firebase_auth_user_id: firebase_uid
             });
 

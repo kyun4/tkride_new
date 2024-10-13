@@ -12,6 +12,7 @@ export default function SignUpDataPrivacy(){
     const firestore_uid = params.firestore_uid;
     const email = params.email;
     const hashed = params.hashed;
+    const user_data = params.user_data;
 
     const onSignUpComplete = () =>{
         onPrivacyPolicyAgreement();
@@ -29,7 +30,7 @@ export default function SignUpDataPrivacy(){
                 privacy_policy_agreement_date_time: new Date().toLocaleDateString() +" "+new Date().toLocaleTimeString()
             });
 
-            router.push({pathname: '/signup_complete',params: {firestore_uid: firestore_uid, email: email, hashed: hashed}});
+            router.push({pathname: '/signup_complete',params: {firestore_uid: firestore_uid, email: email, hashed: hashed, user_data: user_data}});
 
         }catch(error){
             console.error("Error: "+error);

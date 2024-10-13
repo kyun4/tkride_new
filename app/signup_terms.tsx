@@ -13,6 +13,7 @@ export default function SignUpTerms(){
     const firestore_uid = params.firestore_uid;
     const email = params.email;
     const hashed = params.hashed;
+    const user_data = params.user_data;
    
     const onSignUpDataPrivacy = () =>{
         updateTermsConditionAgreementStatus();
@@ -29,7 +30,7 @@ export default function SignUpTerms(){
             const updateRef = await updateDoc(doc(db,"users_list",fuid),{
                 terms_and_condition_agreement_date_time: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString()
             });
-            router.push({pathname: '/signup_data_privacy', params: {firestore_uid: fuid, email: email, hashed: hashed}});
+            router.push({pathname: '/signup_data_privacy', params: {firestore_uid: fuid, email: email, hashed: hashed, user_data:user_data}});
 
         }catch(error){
             console.error("Error: "+error);

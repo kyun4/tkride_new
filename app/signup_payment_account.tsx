@@ -14,6 +14,7 @@ export default function SignUpPaymentAccount(firestore_id: String){
     const firestore_uid = params.firestore_uid;
     const email = params.email;
     const hashed = params.hashed;
+    const user_data = params.user_data;
     
 
     const onSignUpMPin = () =>{
@@ -22,7 +23,11 @@ export default function SignUpPaymentAccount(firestore_id: String){
     }
 
     const onSignUp = () => {
-        router.navigate("/signup")
+       
+        router.navigate("/signup");
+
+        //router.push({ pathname: '/signup', params: { firestore_uid: firestore_uid, email: email , hashed: hashed} });
+          
     }
 
     const dataAvailableEWallets = [
@@ -73,7 +78,7 @@ export default function SignUpPaymentAccount(firestore_id: String){
             const user_collection = collection(doc(db, "users_list", fuid), "payment_links");
             const docRefPaymentLinks = await addDoc(user_collection, payment_links);
 
-            router.push({ pathname: '/signup_mpin', params: { firestoreuid : fuid, email: email, hashed: hashed } })
+            router.push({ pathname: '/signup_mpin', params: { firestoreuid : fuid, email: email, hashed: hashed, user_data: user_data } })
 
 
         }catch(error){

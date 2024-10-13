@@ -13,6 +13,7 @@ export default function SignUpMPin(){
     const firestore_uid = params.firestoreuid;
     const email = params.email;
     const hashed = params.hashed;
+    const user_data = params.user_data;
 
     const attempt_counts = 0;
     
@@ -42,7 +43,7 @@ export default function SignUpMPin(){
                 mpin: mpin
             });
 
-            router.push({pathname: '/signup_terms', params: { firestore_uid: fuid, email: email, hashed: hashed }})
+            router.push({pathname: '/signup_terms', params: { firestore_uid: fuid, email: email, hashed: hashed, user_data: user_data }})
     
 
         }catch(error){

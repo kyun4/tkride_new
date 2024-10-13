@@ -1,11 +1,14 @@
 import { FontAwesome5 } from "@expo/vector-icons";
-import { Text, View, StyleSheet, TextInput,SafeAreaView, Image, Dimensions, TouchableOpacity} from "react-native";
+import { Text, View, StyleSheet, TextInput,SafeAreaView, Image, Alert, Dimensions, TouchableOpacity} from "react-native";
 import { useRouter } from 'expo-router';
 import React,{useState, useEffect} from 'react';
 import {getAuth, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged} from '@firebase/auth'; 
 import {initializeApp} from '@firebase/app';
 import { db } from './firebase';
 import { addDoc, collection } from 'firebase/firestore';
+import { Camera } from 'expo-camera';
+import * as Location  from 'expo-location';
+
 
 
 // export {client, database };
@@ -41,6 +44,68 @@ export const addDocument = async (date_time: string, email: string) => {
 } //  addDocument 
 
 export default function Index() {
+
+  const [hasCameraPermission, setHasCameraPermission] = useState(null);
+  const [hasLocationPermission, setLocationPermission] = useState(null);
+  const [permission_warning_note, setPermissionWarningNote] = useState("");
+  const [location, setLocation] = useState(null);
+
+  let permission_warning_note_content = "";
+  let permissionWarning:any = [];
+  let permission_warning_content = "";
+
+  useEffect(() => {
+
+      (async () => {
+        const {status} = await Camera.requestCameraPermissionsAsync();
+
+        if(status !== 'granted'){
+          Alert.alert("Camera Permission was denied");
+          return;
+        }else{
+          setHasCameraPermission(status === 'granted');
+        }
+       
+      })();
+
+      (async () => {
+
+        const {status} = await Location.requestForegroundPermissionsAsync();
+
+        if(status !== 'granted'){
+          Alert.alert("Location was denied");
+          return;
+        }else{
+          setLocationPermission(status === 'granted');
+        }
+      
+
+      })();
+
+      (async () => {
+
+        const currentLocation = await Location.getCurrentPositionAsync();
+        console.log("Latitude: "+ currentLocation.coords.latitude+" Longitude: "+currentLocation.coords.longitude);
+
+
+      })
+
+      if(hasCameraPermission === null || hasCameraPermission === false){
+        permissionWarning.push("Camera Permission Denied");
+      }
+    
+
+      if(hasLocationPermission == null || hasLocationPermission == false){
+        permissionWarning.push("Location Permission Denied");
+      }
+
+   
+     
+
+
+  },[location])
+
+  
 
 
 
@@ -187,7 +252,10 @@ export default function Index() {
     signup_labels: {
       width: x_dimensions - 220,
       color:"#FD8A02"
-    }
+    },
+
+    permission_warning: { backgroundColor: "#d6d3d1", borderRadius: 8, height: 25, paddingTop: 5, marginTop: 40 },
+    permission_text_warning: { color: "#f5f5f4", width: "100%", textAlign:"center", fontSize: 10 }
 
   })
 
@@ -250,6 +318,19 @@ export default function Index() {
           <Text style = { style.text_login }>Create an Account</Text>
      
         </TouchableOpacity>
+        
+        <View>
+        
+        {
+
+          permissionWarning.map((item:any, index:any) => (
+            <View style = { style.permission_warning } ><Text style = { style.permission_text_warning }>{ item }</Text></View>
+          ))
+
+        }
+
+    
+        </View>
         
        
       </SafeAreaView>

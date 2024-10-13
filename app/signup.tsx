@@ -38,50 +38,75 @@ export default function SignUp(){
     const [countInputComplete, setCountInputComplete] = useState(0);
 
     const [passwordMatched, setPasswordMatch] = useState("");
-
+    const [password_note, setPasswordNote] = useState("");
+    
     const [email, setEmail] = useState('');
     const [isEmailValid, setIsEmailValid] = useState(true);
   
-    const validateEmail = (input:any) => {
-      // Regular expression for validating email
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      setIsEmailValid(emailRegex.test(input)); // Update validity state
-      setEmail(input); // Set the email value
-
-      if(isEmailValid === true){
-
-        addFieldUserInfo('email',email);
-
-      }
-
-    };
-  
+ 
+    
 
     const x_dimensions = Dimensions.get('window').width;
     const y_dimensions = Dimensions.get('window').height;
 
+    
    
     const checkPasswordMatch = () =>{
 
+        let error_message = '';
+
         if(pw !== "" && dpw !== ""){
+
+            if(dpw.length < 8){
+              
+                error_message += 'Password must be atleast 8 characters long\n';
+            }
 
             if(pw === dpw){
                 setPasswordMatch("true");
+                
             }else{
-                setPasswordMatch("false");
+                setPasswordMatch("false");                
+                error_message += "Password mismatch\n";
             }
 
         }else{
             setPasswordMatch("");
         }
 
+     
+
+        if(error_message !== ""){
+            setPasswordNote(error_message);
+        }else{
+            setPasswordNote("")
+        }
         
       
     }
+
+    const validateEmail = () => {
+        // Regular expression for validating email
+
+
+        let email_input = userInfo.hasOwnProperty('email') ? userInfo['email'] : "";
+
+        if(email_input !== ""){
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            setIsEmailValid(emailRegex.test(email_input)); // Update validity state
+               
+        }
+
+      
+  
+      };
+
   
     useEffect(() => {
 
         checkPasswordMatch();
+        validateEmail();
 
         count_form_complete = 0;
         checkFormComplete();
@@ -113,6 +138,7 @@ export default function SignUp(){
         if(date.toLocaleDateString !== null){
 
             count_form_complete += 1;
+            console.log("validaiton on Birhdate");
 
         }
 
@@ -120,59 +146,80 @@ export default function SignUp(){
 
             count_form_complete += 1;
 
+            console.log("validaiton on Username");
         }
 
         if(passwordMatched === "true"){
 
             count_form_complete += 1;
+            console.log("validaiton on Password");
+
 
         }
 
         if(firstname!== ""){
 
             count_form_complete += 1;
+            console.log("validaiton on First Name");
+
 
         }
 
         if(lastname !== ""){
 
             count_form_complete += 1;
+            console.log("validation on Last Name");
+
 
         }
 
         if(email !== "" && isEmailValid === true){
 
             count_form_complete += 1;
+            console.log("validaiton on Email");
+
 
         }
 
+        
         if(phone !== ""){
 
             count_form_complete += 1;
+            console.log("validaiton on Phone");
+
 
         }
 
         if(address_houselotno !== ""){
 
             count_form_complete += 1;
+            console.log("validaiton on Lot No");
+
 
         }
 
         if(address_street !== ""){
 
             count_form_complete += 1;
+            console.log("validation on Address");
+
 
         }
 
         if(address_village !== ""){
 
             count_form_complete += 1;
+            console.log("validaiton on Village");
+
 
         }
+
+    
 
         if(selectedCity !== ""){
 
             count_form_complete += 1;
+            console.log("validaiton on City");
 
         }
 
@@ -182,17 +229,39 @@ export default function SignUp(){
            setFormComplete(false);
         }
 
+        console.log(count_form_complete);
       
-
-
     }
-
 
 
     const insertUserInformation = async () => {
         try{
 
            
+            const userDataTemp = ({
+
+                // address_city: "",
+                // birthdate: "",
+                // username:  "",
+                // firstname:  "",
+                // lastname: "",
+                // email:  "",
+                // phone:  "",
+                // address_houselotno:  "",
+                // address_street:  "",
+                // address_village:  "",
+                // mpin: "",
+                // is_verified: "0",               
+                // terms_and_condition_agreement_date_time: "",
+                // privacy_policy_agreement_date_time: ""
+
+                is_verified: "0",          
+               
+            });
+
+            const userDataRef = await addDoc(collection(db,"users_list"), userDataTemp);
+            setUserFirestoreId(userDataRef.id);
+
             const userData = ({
 
                 address_city: selectedCity,
@@ -204,24 +273,20 @@ export default function SignUp(){
                 phone: userInfo.hasOwnProperty('phone') ? userInfo['phone'] : "",
                 address_houselotno: userInfo.hasOwnProperty('address_houselotno') ? userInfo['address_houselotno'] : "",
                 address_street: userInfo.hasOwnProperty('address_street') ? userInfo['address_street'] : "",
-                address_village: userInfo.hasOwnProperty('address_village') ? userInfo['address_village'] : "",
-                mpin: "",
-                is_verified: "0",               
-                terms_and_condition_agreement_date_time: "",
-                privacy_policy_agreement_date_time: ""
+                address_village: userInfo.hasOwnProperty('address_village') ? userInfo['address_village'] : "",              
+                is_verified: "0", 
+                firestore_uid: userDataRef.id
                
             });
-    
-
-            const userDataRef = await addDoc(collection(db,"users_list"), userData);
-            setUserFirestoreId(userDataRef.id);
 
             // await updateDoc(doc(db,"users_list", userDataRef.id),{
             //     firebase_auth_user_id: firebase_auth_user_id,
             //     user_id: userDataRef.id
             // }); 
 
-            router.push({ pathname: '/signup_payment_account', params: { firestore_uid: userDataRef.id, email: userData.email, hashed: pw} });
+        
+
+            router.push({ pathname: '/signup_payment_account', params: { firestore_uid: userDataRef.id, email: userData.email, hashed: pw, user_data:JSON.stringify(userData)} });
           
          
 
@@ -270,6 +335,8 @@ export default function SignUp(){
             marginVertical: 4,
             width: x_dimensions -200
         },
+        validation_note_content: {  },
+        validation_note: { color:"#FF0000", fontSize:12 },
         inactive_button: {backgroundColor: "#EEE", width: "50%", flexDirection:"row", alignItems:"center", justifyContent: "center", padding:10, borderRadius: 20},
         active_button: {backgroundColor: "#FD8A02", width: "50%", flexDirection:"row", alignItems:"center", justifyContent: "center", padding:10, borderRadius: 20},
     })
@@ -342,6 +409,10 @@ export default function SignUp(){
                     <TextInput style = {  passwordMatched === "true" || passwordMatched === "" ? styler.signup_field : styler.signup_field_with_error } secureTextEntry onChangeText = {setDummyPW} placeholder = "Retry Password"></TextInput>
                 </View>
 
+                <View style = { styler.validation_note_content }>
+                    <Text style = { styler.validation_note }>{ password_note }</Text>
+                </View>
+
             </View>
 
 
@@ -378,7 +449,7 @@ export default function SignUp(){
                 </View>
 
                 <View>
-                    <TextInput style =  { isEmailValid ? styler.signup_field : styler.signup_field_with_error } onChangeText = {(text) => validateEmail(text) }  placeholder = "Email Address"></TextInput>
+                    <TextInput style =  { isEmailValid ? styler.signup_field : styler.signup_field_with_error } onChangeText = {(text) => addFieldUserInfo('email', text) }  placeholder = "Email Address"></TextInput>
                 </View>
 
                 <View>
@@ -409,10 +480,10 @@ export default function SignUp(){
                     <Picker selectedValue = {selectedCity} style = {styler.signup_field_picker} onValueChange={(itemValue, itemIndex) => setSelectedCity(itemValue)}>
                         
                         <Picker.Item label = "(Select Your City)" value = ""></Picker.Item>
-                        <Picker.Item label = "Taguig City" value = "1"></Picker.Item>
-                        <Picker.Item label = "Makati City" value = "2"></Picker.Item>
-                        <Picker.Item label = "Paranaque City" value = "3"></Picker.Item>
-                        <Picker.Item label = "Pasay City" value = "4"></Picker.Item>
+                        <Picker.Item label = "Taguig City" value = "Taguig City"></Picker.Item>
+                        <Picker.Item label = "Makati City" value = "Makati City"></Picker.Item>
+                        <Picker.Item label = "Paranaque City" value = "Paranaque City"></Picker.Item>
+                        <Picker.Item label = "Pasay City" value = "Pasay City"></Picker.Item>
                         
                     </Picker>
                 </View>
